@@ -27,14 +27,14 @@ export default function TransactionBlock(props) {
   return (
     <>
       {props?.index != 0 && (
-        <div className="w-full border-t-[1.5px] border-[#171718] my-[5px]"></div>
+        <div className="w-full border-t-[1.5px] border-[#17171800] my-[5px]"></div>
       )}
       <div
         className="w-full h-[60px] flex justify-start items-center overflow-visible  font-[im]"
         key={props?.index}
       >
         <div
-          className="w-[35px] h-[35px] mt-[-10px] rounded-full flex justify-center items-center "
+          className="w-[35px] mr-[5px] h-[35px] mt-[-10px] rounded-full flex justify-start items-center "
           dangerouslySetInnerHTML={{
             __html:
               categoryToIconMapping[
@@ -42,7 +42,7 @@ export default function TransactionBlock(props) {
               ],
           }}
         ></div>
-        <div
+        {/* <div
           className="w-[20px] h-[35px] mt-[-10px]  mr-[5px] ml-[-10px]  flex justify-start items-end"
           style={{
             color: props?.theme
@@ -71,14 +71,14 @@ export default function TransactionBlock(props) {
               />
             </>
           )}
-        </div>
-        <div className="w-[calc(100%-50px)] flex justify-between items-center ">
+        </div> */}
+        <div className="w-[calc(100%-40px)] flex justify-between items-center ">
           <div className="flex flex-col justify-start items-start">
-            <div className="text-[16px] font-[isb]">
+            <div className="text-[18px] font-[tnb]">
               {props?.data?.transactionName}
             </div>
             <div
-              className="text-[12px] text-[#595959]"
+              className="text-[14px] mt-[-2px] font-[tnm] text-[#595959]"
               //   style={{
               //     color: props?.theme
               //       ? themeColor?.darkTextSecondary
@@ -89,14 +89,14 @@ export default function TransactionBlock(props) {
             </div>
           </div>
           <div className="flex flex-col justify-start items-end">
-            <div className="text-[16px] font-[gmb]">
-              ₹{" "}
+            <div className="text-[18px] font-[tnb] flex justify-end items-center text-[#FF6F6F]">
+              <div className="text-[18px] mt-[2px] mr-[4px] ">+</div>{" "}
               {formatNumberWithCommasAndTwoDigits(
                 props?.data?.transactionAmount
               )}
             </div>
             <div
-              className="text-[12px] text-[#595959]"
+              className="text-[14px] mt-[-2px] font-[tnm] text-[#595959]"
               //   style={{
               //     color: props?.theme
               //       ? themeColor?.darkTextSecondary

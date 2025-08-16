@@ -2,6 +2,7 @@ import {
   ArrowDown01Icon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
+  Calendar04Icon,
   CircleArrowDown01Icon,
   CircleArrowDown02Icon,
   FilterVerticalIcon,
@@ -33,7 +34,10 @@ import {
   formatNumberWithCommasAndTwoDigits,
   formatNumberWithOnlyTwoDigits,
   getCategoryWiseCountWithInfoForTheMonth,
+  getData,
   getExpensesForTheMonth,
+  getMonthYearDetails,
+  getPeriodWiseComparison,
   getTopCategoryForTheMonth,
   getTotalExpenseForTheMonth,
 } from "../../utils/functions";
@@ -52,6 +56,30 @@ const getColor = (value) => {
 export default function HomeSection(props) {
   const [allTransactions, setAllTransactions] = useState([]);
   const [categoryToMapping, setCategoryToMapping] = useState([]);
+
+  const [activeQuarterly, setActiveQuarterly] = useState({
+    monthsIndex: getData(new Date().getMonth())?.monthsIndex, // as index number, need to add +1 for actual month number
+    showRender: `${
+      getData(new Date().getMonth())?.showRender
+    }${new Date().getFullYear()}`, // will be rendered on the website screen
+    quarterId: getData(new Date().getMonth())?.quarterId, // quarter id out of 4 -> 0,1,2,3
+    year: new Date().getFullYear(),
+  });
+  const [activeYearly, setActiveYearly] = useState({
+    year: new Date().getFullYear(), // year to perform operation based on that
+    showRender: `${new Date().getFullYear()}`, // will be rendered on the website screen
+  });
+  const [activeMonthly, setActiveMonthly] = useState({
+    monthId: new Date().getMonth(),
+    year: new Date().getFullYear(),
+    showRender: `${
+      monthName[new Date().getMonth()]?.full
+    }, ${new Date().getFullYear()}`,
+  });
+  const [currDataInfo, setCurrDataInfo] = useState({});
+  const [prevDataInfo, setPrevDataInfo] = useState({});
+  const [activeSearch, setActiveSearch] = useState("Monthly");
+
   // const color = getColor(
   //   (getTotalExpenseForTheMonth(
   //     props.allTransactions,
@@ -129,6 +157,24 @@ export default function HomeSection(props) {
   }
 
   useEffect(() => {
+    const tempData = getPeriodWiseComparison(
+      props?.allTransactions,
+      activeSearch,
+      activeMonthly,
+      activeQuarterly,
+      activeYearly
+    );
+    setCurrDataInfo(tempData[0]);
+    setPrevDataInfo(tempData[1]);
+  }, [
+    props?.allTransactions,
+    activeSearch,
+    activeMonthly,
+    activeYearly,
+    activeQuarterly,
+  ]);
+
+  useEffect(() => {
     getCategoryWiseCountWithInfoForTheMonth(
       allTransactions,
       activeMonthIndex,
@@ -136,13 +182,13 @@ export default function HomeSection(props) {
     );
   }, [activeMonthIndex]);
   return (
-    <div className="w-full h-full flex flex-col justify-start items-center overflow-y-scroll bg-[#000000] p-[15px] text-[#D4D4D4] ">
-      <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] bg-[#1C1C1E] rounded-3xl p-[25px] mb-[10px]">
+    <div className="w-full h-full flex flex-col justify-start items-center overflow-y-scroll bg-[#000000] p-[25px] text-[#D4D4D4] ">
+      <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] mb-[10px]">
         <div className="w-full flex flex-col justify-start items-start">
           <div className="flex justify-between items-center font-[ir] mb-[20px]">
             <div className="text-[#797979] text-[14px] font-[ib] flex justify-start items-center ">
               <div
-                className="w-[26px] h-[26px] flex justify-center items-center rounded-lg border-[1.5px] border-[#2c2b2e] mr-[10px] bg-[#28272A] hover:text-[white] cursor-pointer"
+                className="w-[20px] h-[20px] flex justify-center items-center rounded-lg border-[1.5px] border-[#2c2b2e] mr-[10px] active:bg-[#28272A] active:text-[white] cursor-pointer"
                 onClick={() => {
                   changeMonthIndex(
                     "previous",
@@ -151,22 +197,38 @@ export default function HomeSection(props) {
                     setActiveMonthIndex,
                     setActiveYear
                   );
+                  getMonthYearDetails(
+                    activeSearch, // option means `Monthly` or `Quarterly` or `Yearly`
+                    setActiveSearch, // function to change the data
+                    "previous", // like it will go up or down; possible values , `Next` or `Previous`
+                    activeMonthly,
+                    setActiveMonthly,
+                    activeQuarterly,
+                    setActiveQuarterly,
+                    activeYearly,
+                    setActiveYearly
+                  );
                 }}
               >
                 <HugeiconsIcon
                   icon={ArrowLeft01Icon}
-                  size={18}
+                  size={14}
                   strokeWidth={2.5}
-                  className=" mr-[5px]"
+                  className=""
                 />
               </div>
-              <span className="mr-[5px] text-[#D4D4D4] uppercase font-[ib] text-[14px]">
-                {monthName[activeMonthIndex]?.full},
-              </span>
-              {activeYear}
+              <div className="font-[gmm] text-[14px] flex justify-center items-center mt-[1px]">
+                <HugeiconsIcon
+                  icon={Calendar04Icon}
+                  size={14}
+                  strokeWidth={2.2}
+                  className="mr-[5px] mb-[2px]"
+                />
+                {monthName[activeMonthIndex]?.full},{activeYear}
+              </div>
               <div
                 className={
-                  "w-[26px] h-[26px] justify-center items-center rounded-lg border-[1.5px] border-[#2c2b2e] ml-[10px] bg-[#28272A] hover:text-[white] cursor-pointer" +
+                  "w-[20px] h-[20px] justify-center items-center rounded-lg border-[1.5px] border-[#2c2b2e] ml-[10px] active:bg-[#28272A] active:text-[white] cursor-pointer" +
                   (activeMonthIndex === parseInt(new Date().getMonth()) &&
                   activeYear === parseInt(new Date().getFullYear())
                     ? " hidden"
@@ -180,27 +242,48 @@ export default function HomeSection(props) {
                     setActiveMonthIndex,
                     setActiveYear
                   );
+                  getMonthYearDetails(
+                    activeSearch, // option means `Monthly` or `Quarterly` or `Yearly`
+                    setActiveSearch, // function to change the data
+                    "next", // like it will go up or down; possible values , `Next` or `Previous`
+                    activeMonthly,
+                    setActiveMonthly,
+                    activeQuarterly,
+                    setActiveQuarterly,
+                    activeYearly,
+                    setActiveYearly
+                  );
                 }}
               >
                 <HugeiconsIcon
                   icon={ArrowRight01Icon}
-                  size={18}
+                  size={14}
                   strokeWidth={2.5}
-                  className={
-                    " ml-[5px]" +
-                    (activeMonthIndex === parseInt(new Date().getMonth()) &&
-                    activeYear === parseInt(new Date().getFullYear())
-                      ? " hidden"
-                      : " flex")
-                  }
+                  className=""
                 />
               </div>
             </div>
           </div>
           <div className="w-full flex justify-between items-center">
-            <div className="text-[#D4D4D4] text-[34px] font-[ieb] flex justify-start items-center ">
-              <span className="mr-[10px]">₹</span>
+            <div className="text-[#D4D4D4] text-[28px] font-[tnb] flex justify-start items-center ">
+              {/* <span className="mr-[10px]">₹</span> */}
+              <span className="mr-[10px] text-[24px] mt-[2.5px] font-[tnh]">
+                ₹
+              </span>
               <CountUp
+                from={0}
+                to={
+                  Object.keys(currDataInfo).length > 0
+                    ? (currDataInfo?.totalExpense).toString()
+                    : 0
+                }
+                decimals={2}
+                separator=","
+                direction="up"
+                duration={0.2}
+                className="count-up-text  "
+              />
+              {/* <CountUp
                 from={0}
                 to={getTotalExpenseForTheMonth(
                   props.allTransactions,
@@ -212,7 +295,7 @@ export default function HomeSection(props) {
                 direction="up"
                 duration={0.2}
                 className="count-up-text"
-              />
+              /> */}
 
               {/* {getTotalExpenseForTheMonth(
                 props.allTransactions,
@@ -220,8 +303,8 @@ export default function HomeSection(props) {
                 activeYear
               )} */}
             </div>
-            <div className="max-h-[50px] aspect-square rounded-full font-[ieb] ">
-              <CircularProgressbar
+            <div className="max-h-[30px] aspect-square rounded-full font-[ieb] ">
+              {/* <CircularProgressbar
                 value={
                   (getTotalExpenseForTheMonth(
                     props.allTransactions,
@@ -275,10 +358,78 @@ export default function HomeSection(props) {
                   trailColor: "#28272A",
                   textSize: "20px",
                 })}
-              />
+              /> */}
             </div>
           </div>
-          <div className="w-full my-[20px] border-t-[1.5px] border-[#28272A]"></div>
+          {/* <div className="w-full my-[0px] border-t-[1.5px] border-[#28272A]"></div> */}
+          <div className="w-full flex justify-start items-center my-[20px] h-[6px]">
+            {Object?.keys(currDataInfo).length > 0 ? (
+              <>
+                {Object.entries(currDataInfo?.expenseDistribution[0])?.map(
+                  ([key, value], index, arr) => {
+                    return (
+                      <>
+                        <div
+                          key={index + "01"}
+                          className={
+                            "min-w-[2px] h-full" +
+                            (index > 0 ? " flex" : " hidden")
+                          }
+                          style={{ transition: ".3s" }}
+                        ></div>
+
+                        <div
+                          // onMouseEnter={() => {
+                          //   setHoveredCategory(value?.categoryName);
+                          // }}
+                          // onMouseLeave={() => {
+                          //   setHoveredCategory("");
+                          // }}
+                          key={index + "02"}
+                          className={
+                            " h-full flex justify-center items-center  " +
+                            (index == 0
+                              ? " rounded-l-[4px] rounded-r-[2px]"
+                              : index == arr?.length - 1
+                              ? " rounded-r-[4px] rounded-l-[2px]"
+                              : " rounded-[2px]")
+                          }
+                          style={{
+                            width: `${value?.categoryPercentage}%`,
+                            transition: ".3s",
+                          }}
+                        >
+                          <div
+                            key={index + "02"}
+                            className={
+                              " h-full w-full" +
+                              (index == 0
+                                ? " rounded-l-[4px] rounded-r-[2px]"
+                                : index == arr?.length - 1
+                                ? " rounded-r-[4px] rounded-l-[2px]"
+                                : " rounded-[2px]")
+                            }
+                            style={{
+                              backgroundColor:
+                                // hoveredCategory === value?.categoryName
+                                //   ? `${colorCode[index]?.primary}`
+                                //   : hoveredCategory.length > 0
+                                //   ? `${colorCode[index]?.secondary}`
+                                //   :
+                                `${colorCode[index]?.primary}`,
+                              transition: ".3s",
+                            }}
+                          ></div>
+                        </div>
+                      </>
+                    );
+                  }
+                )}
+              </>
+            ) : (
+              <></>
+            )}
+          </div>
           <div className="w-full flex justify-start items-start">
             <div className="text-[#D4D4D4] text-[34px] flex flex-col justify-start items-start ">
               <div className="text-[14px] text-[#797979] font-[ir]">
@@ -316,195 +467,6 @@ export default function HomeSection(props) {
                   ),
                   activeMonthIndex,
                   activeYear
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="w-full flex flex-col justify-start items-start mt-[30px]">
-            <div className="text-[14px] text-[#797979] font-[ir] mb-[5px]">
-              Expense Distribution
-            </div>
-
-            {Object.keys(
-              getCategoryWiseCountWithInfoForTheMonth(
-                allTransactions,
-                activeMonthIndex,
-                activeYear
-              )
-            ).length > 2 ? (
-              <>
-                {Object.entries(
-                  getCategoryWiseCountWithInfoForTheMonth(
-                    allTransactions,
-                    activeMonthIndex,
-                    activeYear
-                  )
-                ).map(([category, info], index) => {
-                  return (
-                    <>
-                      {index < 2 || showAllDistribution ? (
-                        <div
-                          key={index}
-                          className="text-[#D4D4D4] text-[34px] flex justify-start items-center w-full mt-[7px] "
-                        >
-                          <div
-                            className="w-[8px] aspect-square rounded-full mr-[10px]"
-                            style={{
-                              backgroundColor: `${colorCode[index].primary}`,
-                            }}
-                          ></div>
-                          <div className="text-[14px] font-[isb] w-[130px]">
-                            {category.charAt(0).toUpperCase() +
-                              category.slice(1)}
-                          </div>
-                          <div className="w-[calc(100%-200px)] h-[6px] bg-[#28272A] flex justify-start items-center rounded-full overflow-hidden">
-                            <div
-                              className="h-full rounded-full"
-                              style={{
-                                width: `${Math.round(
-                                  (info.totalAmount /
-                                    getTotalExpenseForTheMonth(
-                                      props.allTransactions,
-                                      activeMonthIndex,
-                                      activeYear
-                                    )) *
-                                    100
-                                )}%`,
-                                transition: ".3s",
-                                backgroundColor: `${colorCode[index].primary}`,
-                              }}
-                            ></div>
-                          </div>
-                          <div className="text-[14px] font-[isb] tracking-wide w-[50px] flex justify-end">
-                            {Math.round(
-                              (info.totalAmount /
-                                getTotalExpenseForTheMonth(
-                                  props.allTransactions,
-                                  activeMonthIndex,
-                                  activeYear
-                                )) *
-                                100
-                            )}
-                            %
-                          </div>
-                        </div>
-                      ) : (
-                        <></>
-                      )}
-                    </>
-                  );
-                })}
-              </>
-            ) : (
-              <>
-                {Object.entries(
-                  getCategoryWiseCountWithInfoForTheMonth(
-                    allTransactions,
-                    activeMonthIndex,
-                    activeYear
-                  )
-                ).map(([category, info], index) => {
-                  return (
-                    <div
-                      key={index}
-                      className="text-[#D4D4D4] text-[34px] flex justify-start items-center w-full mt-[7px] "
-                    >
-                      <div
-                        className="w-[10px] aspect-square rounded-full mr-[10px]"
-                        style={{
-                          backgroundColor: `${colorCode[index].primary}`,
-                        }}
-                      ></div>
-                      <div className="text-[14px] font-[isb] w-[130px]">
-                        {category.charAt(0).toUpperCase() + category.slice(1)}
-                      </div>
-                      <div className="w-[calc(100%-200px)] h-[6px] bg-[#28272A] flex justify-start items-center rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${Math.round(
-                              (info.totalAmount /
-                                getTotalExpenseForTheMonth(
-                                  props.allTransactions,
-                                  activeMonthIndex,
-                                  activeYear
-                                )) *
-                                100
-                            )}%`,
-                            transition: ".3s",
-                            backgroundColor: `${colorCode[index].primary}`,
-                          }}
-                        ></div>
-                      </div>
-                      <div className="text-[14px] font-[isb] tracking-wide w-[50px] flex justify-end">
-                        {Math.round(
-                          (info.totalAmount /
-                            getTotalExpenseForTheMonth(
-                              props.allTransactions,
-                              activeMonthIndex,
-                              activeYear
-                            )) *
-                            100
-                        )}
-                        %
-                      </div>
-                    </div>
-                  );
-                })}
-              </>
-            )}
-
-            {/* <div className="text-[#D4D4D4] text-[34px] flex justify-start items-center w-full mt-[7px] ">
-              <div className="w-[10px] aspect-square rounded-full bg-[#FF6A64] mr-[10px]"></div>
-              <div className="text-[16px] font-[isb] w-[130px]">Travel</div>
-              <div className="w-[calc(100%-200px)] h-[6px] bg-[#28272A] flex justify-start items-center rounded-full overflow-hidden">
-                <div className="h-full w-[78%] bg-[#FF6A64] rounded-full"></div>
-              </div>
-              <div className="text-[16px] font-[isb] tracking-wide w-[50px] flex justify-end">
-                23%
-              </div>
-            </div>
-            <div className="text-[#D4D4D4] text-[34px] flex justify-start items-center w-full mt-[7px]">
-              <div className="w-[10px] aspect-square rounded-full bg-[#D4D4D4] mr-[10px]"></div>
-              <div className="text-[16px] font-[isb] w-[130px]">Food</div>
-              <div className="w-[calc(100%-200px)] h-[6px] bg-[#28272A] flex justify-start items-center rounded-full overflow-hidden">
-                <div className="h-full w-[30%] bg-[#D4D4D4] rounded-full"></div>
-              </div>
-              <div className="text-[16px] font-[isb] tracking-wide w-[50px] flex justify-end">
-                23%
-              </div>
-            </div> */}
-            <div className="text-[#868686] active:text-[#D4D4D4] text-[14px]  flex justify-start items-center w-full mt-[7px]">
-              <div
-                className="flex justify-center items-center font-[isb] bg-[#28272A] p-[10px] py-[8px] pr-[12px] rounded-[14px] mt-[15px] border-[1.5px] border-[#2c2b2e] drop-shadow-md"
-                onClick={(e) => {
-                  setShowAllDistribution(!showAllDistribution);
-                }}
-              >
-                <HugeiconsIcon
-                  icon={ArrowDown01Icon}
-                  size={18}
-                  strokeWidth={2.5}
-                  className={
-                    "mr-[5px]" +
-                    (showAllDistribution ? " rotate-180" : " rotate-0")
-                  }
-                  style={{ transition: " .3s" }}
-                />
-                {showAllDistribution ? (
-                  <>less</>
-                ) : (
-                  <>
-                    +
-                    {Object.keys(
-                      getCategoryWiseCountWithInfoForTheMonth(
-                        allTransactions,
-                        activeMonthIndex,
-                        activeYear
-                      )
-                    ).length - 2}{" "}
-                    more
-                  </>
                 )}
               </div>
             </div>

@@ -267,7 +267,7 @@ export default function ChartSection(props) {
         {/* ---- Expense and budget info */}
         <div className="w-full flex justify-between items-center">
           <div className="flex flex-col justify-start items-start">
-            <div className="text-[#D4D4D4] text-[24px] font-[gmm] flex justify-start items-center ">
+            <div className="text-[#D4D4D4] text-[28px] font-[tnb] flex justify-start items-center ">
               <span className="mr-[10px] text-[24px] mt-[2.5px] font-[tnh]">
                 ₹
               </span>
@@ -305,7 +305,7 @@ export default function ChartSection(props) {
                 <div className="text-[14px] text-[#797979]">60000</div>
               </div>
             </div>
-            <div className="font-[gmm]  text-[12px] flex justify-start items-center">
+            <div className="font-[tnm]  text-[16px] flex justify-start items-center">
               {prevDataInfo?.totalExpense - currDataInfo?.totalExpense > 0 ? (
                 <div className="flex justify-start items-center text-[#7ED957]">
                   <HugeiconsIcon
@@ -483,7 +483,7 @@ export default function ChartSection(props) {
                             transition: ".15s",
                           }}
                         ></div>
-                        <div className="font-[gmr] text-[14px]" style={{}}>
+                        <div className="font-[tnr] text-[18px]" style={{}}>
                           {value?.categoryName?.charAt(0)?.toUpperCase() +
                             value?.categoryName?.slice(1)}
                         </div>
