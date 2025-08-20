@@ -34,7 +34,7 @@ export default function TransactionBlock(props) {
         key={props?.index}
       >
         <div
-          className="w-[35px] mr-[5px] h-[35px] mt-[-10px] rounded-full flex justify-start items-center "
+          className="w-[35px] mr-[5px] h-[35px] mt-[-10px] rounded-full flex justify-start items-center font-[em] "
           dangerouslySetInnerHTML={{
             __html:
               categoryToIconMapping[

@@ -44,6 +44,7 @@ import {
 import { colorCode, creamyCoolColors, monthName } from "../../utils/constants";
 import TransactionBlock from "../TransactionBlock";
 import CountUp from "../animations/CountUp";
+import ShowTransactionInfo from "../ShowTransactionInfo";
 
 const getColor = (value) => {
   if (value < 45) return "#7ED957"; // green color -> creamy
@@ -183,6 +184,8 @@ export default function HomeSection(props) {
   }, [activeMonthIndex]);
   return (
     <div className="w-full h-full flex flex-col justify-start items-center overflow-y-scroll bg-[#000000] p-[25px] text-[#D4D4D4] ">
+      {/* <ShowTransactionInfo /> */}
+      {/* <div className="w-full min-h-[30px] bg-[#0e0e0e] rounded-xl bg-[repeating-linear-gradient(-45deg,#191919_0_1px,transparent_2px_4px)]"></div> */}
       <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] mb-[10px]">
         <div className="w-full flex flex-col justify-start items-start">
           <div className="flex justify-between items-center font-[ir] mb-[20px]">
@@ -266,7 +269,6 @@ export default function HomeSection(props) {
           </div>
           <div className="w-full flex justify-between items-center">
             <div className="text-[#D4D4D4] text-[28px] font-[tnb] flex justify-start items-center ">
-              {/* <span className="mr-[10px]">₹</span> */}
               <span className="mr-[10px] text-[24px] mt-[2.5px] font-[tnh]">
                 ₹
               </span>
@@ -283,28 +285,9 @@ export default function HomeSection(props) {
                 duration={0.2}
                 className="count-up-text  "
               />
-              {/* <CountUp
-                from={0}
-                to={getTotalExpenseForTheMonth(
-                  props.allTransactions,
-                  activeMonthIndex,
-                  activeYear
-                )}
-                decimals={2}
-                separator=","
-                direction="up"
-                duration={0.2}
-                className="count-up-text"
-              /> */}
-
-              {/* {getTotalExpenseForTheMonth(
-                props.allTransactions,
-                activeMonthIndex,
-                activeYear
-              )} */}
             </div>
             <div className="max-h-[30px] aspect-square rounded-full font-[ieb] ">
-              {/* <CircularProgressbar
+              <CircularProgressbar
                 value={
                   (getTotalExpenseForTheMonth(
                     props.allTransactions,
@@ -358,10 +341,10 @@ export default function HomeSection(props) {
                   trailColor: "#28272A",
                   textSize: "20px",
                 })}
-              /> */}
+              />
             </div>
           </div>
-          {/* <div className="w-full my-[0px] border-t-[1.5px] border-[#28272A]"></div> */}
+
           <div className="w-full flex justify-start items-center my-[20px] h-[6px]">
             {Object?.keys(currDataInfo).length > 0 ? (
               <>

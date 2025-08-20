@@ -273,7 +273,7 @@ export function InputFieldUIForImageUpload(props) {
         className={" flex flex-col justify-start items-start w-full"}
         style={{ marginTop: `${props?.marginTop}` }}
       >
-        <label
+        {/* <label
           className={
             "text-[12px] h-[2px] flex justify-center items-center px-[6px] mb-[-1.5px] ml-[10px] z-50 font-[im]" +
             (props?.activeInputField === props?.fieldValue
@@ -288,15 +288,10 @@ export function InputFieldUIForImageUpload(props) {
           >
             *
           </span>
-        </label>
+        </label> */}
         <div className="w-full flex flex-col justify-start items-end min-h-[50px] max-h-[50px] overflow-visible">
           <input
-            className={
-              "w-[calc(100%-0px)] bg-transparent min-h-[50px] outline-none rounded-[10px] border-[1.5px] text-[14px] mt-[0px] font-[isb] pr-[90px] text-ellipsis pl-[45px]" +
-              (props?.activeInputField === props?.fieldValue
-                ? "  placeholder:text-[#828282] border-[#3c3b3e] "
-                : "  placeholder:text-[#828282] border-[#28272A] ")
-            }
+            className="w-[calc(100%-0px)] bg-[#131314] min-h-[50px] outline-none rounded-[10px]  text-[14px] mt-[0px] font-[isb] pr-[90px] text-ellipsis pl-[45px]"
             type={props?.type}
             style={{ transition: ".1s" }}
             autoFocus={props?.isAutoFocus}

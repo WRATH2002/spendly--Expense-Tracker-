@@ -53,6 +53,7 @@ import { returnSearchedCategory } from "../utils/functions";
 import ChartSection from "./sectionComponents/ChartSection";
 import SettingsSection from "./sectionComponents/SettingsSection";
 import { temp } from "../utils/constants";
+import NewInputFields from "./NewInputFields";
 
 const getColor = (value) => {
   // if (value < 40) return "#D25340"; // red
@@ -86,12 +87,24 @@ export default function ContentContainer(props) {
   const [trnCategory, setTrnCategory] = useState("");
   const [searchCat, setSearchCat] = useState("");
 
+  const [trnIncludeInBudget, setTrnIncludeInBudget] = useState(false);
   const [trnAmount, setTrnAmount] = useState("");
   const [trnReciept, setTrnReciept] = useState("");
   const [trnRecieptInfo, setTrnRecieptInfo] = useState("");
   const [activeInputField, setActiveInputField] = useState("taskTitle");
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [colorTheme, setColorTheme] = useState(0);
+  const [accountInfo, setAccountInfo] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phoneNo: "",
+    photoURL: "",
+    theme: false,
+    userID: "",
+    budgte: 0,
+    income: 0,
+  });
 
   const navigate = useNavigate();
 
@@ -100,10 +113,38 @@ export default function ContentContainer(props) {
     navigate(`${path}`);
   }
 
+  // ---- Function to fetch account details
+  function fetchAccountDetails() {
+    const user = firebase.auth().currentUser;
+
+    const transactionsRef = db.collection("userSpace").doc(user?.uid);
+
+    onSnapshot(transactionsRef, (snapshot) => {
+      console.log(
+        "Fetched %Account's%c Info =>",
+        "color: #1caee8; font-weight: bold;",
+        "color: #ffffff;"
+      );
+      console.table(snapshot?.data()?.AllTransactions);
+      setAccountInfo({
+        name: snapshot?.data()?.name,
+        email: snapshot?.data()?.email,
+        password: snapshot?.data()?.password,
+        phoneNo: snapshot?.data()?.phoneNo,
+        photoURL: snapshot?.data()?.photoURL,
+        theme: snapshot?.data()?.theme,
+        userID: snapshot?.data()?.userID,
+        budgte: snapshot?.data()?.budgte,
+        income: snapshot?.data()?.income,
+      });
+    });
+  }
+
   // --------- Checking if User is logged in and performing task based on that state
   useEffect(() => {
     const authUserLoginState = onAuthStateChanged(auth, (user) => {
       if (user) {
+        fetchAccountDetails();
         fetchAllTransactions();
       } else {
         navigateToPage(`/user/login`);
@@ -348,6 +389,7 @@ export default function ContentContainer(props) {
           transactionBillURL: trnReciept,
           transactionAmount: parseFloat(parseFloat(trnAmount).toFixed(2)),
           transactionCategory: trnCategory,
+          includeInBudget: trnIncludeInBudget,
           // splittedMemberCount: splittedMemberCount,
           // splittedMemberIDS: splittedMemberIDS,
         }),
@@ -400,7 +442,7 @@ export default function ContentContainer(props) {
         </div>
       ) : activeSection === "settings" ? (
         <>
-          <SettingsSection />
+          <SettingsSection accountInfo={accountInfo} />
         </>
       ) : (
         <></>
@@ -430,7 +472,7 @@ export default function ContentContainer(props) {
         initial={{ y: 800 }}
         // style={{ touchAction: "none" }}
         // onDragEnd={handleDragEnd}
-        className="fixed left-0 right-0 bottom-0 h-[600px] bg-[#1C1C1E] text-[#D4D4D4] rounded-t-3xl shadow-lg z-50 p-[25px] pt-[5px]"
+        className="fixed left-0 right-0 bottom-0 h-[600px] bg-[#1C1C1E] text-[#D4D4D4] rounded-t-3xl shadow-lg z-50 p-[25px] pt-[5px] text-[15px] font-[em] overflow-y-scroll "
       >
         {/* ---- GRIP AREA ---- */}
 
@@ -439,7 +481,7 @@ export default function ContentContainer(props) {
           dragConstraints={{ top: 0, bottom: 0 }}
           style={{ y, touchAction: "none", zIndex: 60 }}
           onDragEnd={handleDragEnd}
-          className="z-[60] w-full flex justify-center items-center h-[20px] cursor-grab active:cursor-grabbing   relative"
+          className="z-[60] w-full flex justify-center items-center h-[20px] cursor-grab active:cursor-grabbing   relative "
         ></motion.div>
         <div
           className="w-full flex justify-center items-center h-[20px] mt-[-20px] relative "
@@ -447,7 +489,410 @@ export default function ContentContainer(props) {
         >
           <div className="w-[80px] h-[6px] bg-[#5a595c] rounded-full "></div>
         </div>
+        <div className="w-full mt-[30px]"></div>
+        <div className="uppercase pl-[15px] text-[12px] mb-[10px] text-[#797979]">
+          Transaction Info
+        </div>
+        <div className="flex flex-col justify-start items-start w-full bg-[#131314] px-[0px] rounded-xl ">
+          <div className="w-full h-[50px] flex justify-start items-center px-[15px] ">
+            <NewInputFields // ---- For Transaction Name Input
+              theme={props?.theme}
+              inputTitle={"Transaction Name"}
+              data={trnName}
+              setData={setTrnName}
+              activeInputField={activeInputField}
+              setActiveInputField={setActiveInputField}
+              fieldValue={"tName"}
+              placeholderText={"eg. Design Home Page Wireframe"}
+              placeholderContentLabel={"Transaction Name"}
+              rejectChar={false}
+              charsToReject={[]}
+              marginTop={"0px"}
+              paddinLeft={"0px"}
+              isEditable={true}
+              isAutoFocus={true}
+              addButton={false}
+              isRequired={true}
+              type={"text"}
+            />
+          </div>
+          <div className="w-full border-t-[1.5px] border-[#1C1C1E]"></div>
+          <div className="w-full h-[50px] flex justify-between items-center px-[15px] py-[0px]">
+            <div className="w-[50%] h-full flex justify-start items-center ">
+              <NewInputFields // ---- For Transaction Date Input
+                theme={props?.theme}
+                inputTitle={"Transaction Date"}
+                data={trnDate}
+                setData={setTrnDate}
+                activeInputField={activeInputField}
+                setActiveInputField={setActiveInputField}
+                fieldValue={"tDate"}
+                placeholderText={"eg. 23/02/2025"}
+                placeholderContentLabel={"Date"}
+                rejectChar={false}
+                charsToReject={[]}
+                marginTop={"0px"}
+                paddinLeft={"0px"}
+                isEditable={true}
+                isAutoFocus={false}
+                addButton={false}
+                isRequired={true}
+                type={"text"}
+              />
+            </div>
+            <div className="h-full border-l-[1.5px] border-[#1C1C1E] "></div>
+            <div className="w-[50%] h-full flex justify-start items-center ">
+              <div className="flex justify-start items-center w-[30px] mr-[-30px] pl-[15px] ">
+                ₹
+              </div>
+              <NewInputFields // ---- For Transaction Amount Input
+                theme={props?.theme}
+                inputTitle={"Transaction Amount"}
+                data={trnAmount}
+                setData={setTrnAmount}
+                activeInputField={activeInputField}
+                setActiveInputField={setActiveInputField}
+                fieldValue={"tAmount"}
+                placeholderText={"eg. 234.94"}
+                placeholderContentLabel={"Amount"}
+                rejectChar={false}
+                charsToReject={[]}
+                marginTop={"0px"}
+                paddingLeft={"35px"}
+                isEditable={true}
+                isAutoFocus={false}
+                addButton={false}
+                isRequired={true}
+                type={"number"}
+              />
+            </div>
+          </div>
+          <div className="w-full border-t-[1.5px] border-[#1C1C1E]"></div>
+          <div className="w-full h-[50px] flex justify-start items-center px-[15px] ">
+            <NewInputFields // ---- For Transaction Amount Input
+              theme={props?.theme}
+              inputTitle={"Transaction ID"}
+              data={trnId}
+              setData={setTrnId}
+              activeInputField={activeInputField}
+              setActiveInputField={setActiveInputField}
+              fieldValue={"tID"}
+              placeholderText={"eg. 16294GIT23I4T7T2C3C753"}
+              placeholderContentLabel={"Transaction ID"}
+              rejectChar={false}
+              charsToReject={[]}
+              marginTop={"0px"}
+              paddingLeft={"0px"}
+              isEditable={true}
+              isAutoFocus={false}
+              addButton={false}
+              isRequired={false}
+              type={"text"}
+            />
+          </div>
+        </div>
 
+        <div className="uppercase pl-[15px] text-[12px] mt-[20px] mb-[10px] text-[#797979]">
+          Transaction Info
+        </div>
+        <div className="flex flex-col justify-start items-start w-full bg-[#131314] px-[0px] rounded-xl ">
+          <div className="w-full h-[50px] flex justify-between items-center px-[15px] py-[0px]">
+            <div className="w-[50%] h-full flex justify-start items-center ">
+              <NewInputFields // ---- For Transaction Category Input
+                theme={props?.theme}
+                inputTitle={"Transaction Category"}
+                data={trnCategory}
+                setData={setTrnCategory}
+                activeInputField={activeInputField}
+                setActiveInputField={setActiveInputField}
+                fieldValue={"tCategory"}
+                placeholderText={"eg. Food"}
+                placeholderContentLabel={"Category"}
+                rejectChar={false}
+                charsToReject={[]}
+                marginTop={"0px"}
+                paddinLeft={"0px"}
+                isEditable={true}
+                isAutoFocus={false}
+                addButton={false}
+                isRequired={true}
+                type={"text"}
+              />
+            </div>
+            <div className="h-full border-l-[1.5px] border-[#1C1C1E] "></div>
+            <div className="w-[50%] h-full flex justify-start items-center ">
+              {/* <NewInputFields // ---- For Transaction Inwar Input
+                theme={props?.theme}
+                inputTitle={"Transaction Amount"}
+                data={trnAmount}
+                setData={setTrnAmount}
+                activeInputField={activeInputField}
+                setActiveInputField={setActiveInputField}
+                fieldValue={"tAmount"}
+                placeholderText={"eg. 234.94"}
+                placeholderContentLabel={"Amount"}
+                rejectChar={false}
+                charsToReject={[]}
+                marginTop={"0px"}
+                paddingLeft={"0px"}
+                isEditable={true}
+                isAutoFocus={false}
+                addButton={false}
+                isRequired={true}
+                type={"number"}
+              /> */}
+            </div>
+          </div>
+          <div className="w-full border-t-[1.5px] border-[#1C1C1E]"></div>
+          <div className="w-full h-[50px] flex justify-between items-center px-[15px] py-[0px]">
+            <div className="w-[50%] h-full flex justify-start items-center ">
+              <NewInputFields // ---- For Transaction Date Input
+                theme={props?.theme}
+                inputTitle={"Transaction Mode"}
+                data={trnMode}
+                setData={setTrnMode}
+                activeInputField={activeInputField}
+                setActiveInputField={setActiveInputField}
+                fieldValue={"tMode"}
+                placeholderText={"eg. Online UPI"}
+                placeholderContentLabel={"eg. UPI, Cash, Card"}
+                rejectChar={false}
+                charsToReject={[]}
+                marginTop={"0px"}
+                paddinLeft={"0px"}
+                isEditable={true}
+                isAutoFocus={false}
+                addButton={false}
+                isRequired={true}
+                type={"text"}
+              />
+            </div>
+            <div className="h-full border-l-[1.5px] border-[#1C1C1E] "></div>
+            <div className="w-[50%] h-full flex justify-start items-center ">
+              <NewInputFields // ---- For Transaction Amount Input
+                theme={props?.theme}
+                inputTitle={"Transaction Type"}
+                data={trnType}
+                setData={setTrnType}
+                activeInputField={activeInputField}
+                setActiveInputField={setActiveInputField}
+                fieldValue={"tType"}
+                placeholderText={"eg. Single, Split"}
+                placeholderContentLabel={"eg. Single, Split"}
+                rejectChar={false}
+                charsToReject={[]}
+                marginTop={"0px"}
+                paddingLeft={"15px"}
+                isEditable={true}
+                isAutoFocus={false}
+                addButton={false}
+                isRequired={true}
+                type={"text"}
+              />
+            </div>
+          </div>
+          <div className="w-full border-t-[1.5px] border-[#1C1C1E]"></div>
+          <div className="w-full h-[50px] flex justify-between items-center px-[15px] ">
+            <div>Include in Budget</div>
+            <div
+              className={
+                "w-[40px] h-[28px] rounded-full flex justify-start items-center" +
+                (trnIncludeInBudget ? " bg-[#7ED957]" : " bg-[#000000]")
+              }
+              onClick={() => {
+                setTrnIncludeInBudget(!trnIncludeInBudget);
+              }}
+              style={{ transition: ".3s" }}
+            >
+              <div
+                className={
+                  "h-[22px] w-[22px] rounded-full drop-shadow-lg " +
+                  (trnIncludeInBudget
+                    ? " ml-[15px] bg-[#ffffff]"
+                    : " ml-[3px] bg-[#2b2b2e]")
+                }
+                style={{ transition: ".3s" }}
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="uppercase pl-[15px] text-[12px] mt-[20px] mb-[10px] text-[#797979]">
+          Transaction Bill/Receipt
+        </div>
+
+        <div className="w-full flex justify-start items-center mt-[0px]">
+          <div
+            className="max-h-[50px] aspect-square min-h-[20px] mr-[-35px] flex justify-center items-center  z-[51] "
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log("Clicked on Image Upload");
+              setShowImage((prev) => !prev);
+            }}
+          >
+            <div className="max-h-[20px] min-h-[20px] aspect-square ml-[15px] mr-[-35px] bg-[]">
+              <CircularProgressbar
+                value={imageUploadPortion}
+                // text={`${80}%`}
+                strokeWidth={16}
+                styles={buildStyles({
+                  pathColor: color,
+                  textColor: color,
+                  trailColor: "#28272A",
+                  textSize: "20px",
+                })}
+              />
+            </div>
+            <div
+              className={
+                "max-h-[20px] min-h-[20px] aspect-square ml-[15px] rounded-full flex justify-center items-center bg-[#95C765]" +
+                (imageUploadPortion === 100 ? " opacity-100" : " opacity-0")
+              }
+              style={{
+                transition: imageUploadPortion === 100 ? ".2s" : "0s",
+                transitionDelay: imageUploadPortion === 100 ? "0.2s" : "0s",
+              }}
+            >
+              <HugeiconsIcon
+                icon={Tick02Icon}
+                size={14}
+                strokeWidth={6.4}
+                className="text-[#1C1C1E]"
+              />
+            </div>
+          </div>
+          <InputFieldUIForImageUpload
+            theme={props?.theme}
+            inputTitle={"Transaction Reciept"}
+            var={trnRecieptInfo || ""}
+            setVar={setTrnRecieptInfo}
+            activeInputField={activeInputField}
+            setActiveInputField={setActiveInputField}
+            fieldValue={"tReciept"}
+            placeholderText={"No reciept uploaded"}
+            marginTop={"0px"}
+            isEditable={false}
+            isAutoFocus={false}
+            addButton={false}
+            isRequired={false}
+            type={"text"}
+          />
+
+          <div
+            className="h-[36px] rounded-[5px] w-[70px] ml-[-77px] mr-[7px] flex justify-end items-center  font-[isb] text-[14px] pr-[10px] "
+            // onClick={handleDivClick}
+          >
+            <HugeiconsIcon
+              icon={Delete01Icon}
+              size={20}
+              strokeWidth={2}
+              className={
+                "mr-[10px] text-[#797979] hover:text-[#D4D4D4]" +
+                (imageUploadPortion === 100 && trnReciept.length > 0
+                  ? " flex"
+                  : " hidden")
+              }
+              onClick={() => {
+                setTrnReciept("");
+                setTrnRecieptInfo("");
+                setImageUploadPortion(0);
+                setImagePreview(null);
+              }}
+            />
+            <HugeiconsIcon
+              icon={ImageUploadIcon}
+              size={20}
+              strokeWidth={2}
+              className=" text-[#797979] hover:text-[#D4D4D4]"
+              onClick={handleDivClick}
+            />
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+            style={{ display: "none" }}
+          />
+        </div>
+
+        <div className={`mt-[40px] w-full flex justify-center items-center `}>
+          <button
+            // onClick={onClick}
+            onClick={(e) => {
+              if (checkReadiness()) {
+                addTransactionInfo();
+                setShowAddTransactionModal(false);
+                setTrnName("");
+                setTrnDate(
+                  new Date().getDate() +
+                    "/" +
+                    (new Date().getMonth() + 1) +
+                    "/" +
+                    new Date().getFullYear()
+                );
+                setTrnId("");
+                setTrnMode("Cash");
+                setTrnType("Single");
+                setTrnCategory("");
+                setTrnAmount("");
+                setTrnReciept("");
+                setTrnRecieptInfo("");
+                setImage(null);
+                setImagePreview(null);
+                setImageUploadPortion(0);
+                setActiveInputField("taskTitle");
+                setTrnIncludeInBudget(false);
+              }
+            }}
+            className={
+              `
+          group relative overflow-hidden
+          bg-gradient-to-br from-[#0e3ec3] via-[#0156d6] to-[#014bbb]
+          rounded-[15px] h-[45px] px-[10px]
+          flex items-center justify-center
+         
+         
+        ` +
+              (checkReadiness()
+                ? " opacity-100 cursor-pointer"
+                : " opacity-25 cursor-not-allowed")
+            }
+          >
+            <div className="absolute inset-0 rounded-[10px] shadow-inner shadow-blue-900/20" />
+
+            <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+
+            <div
+              className="
+          relative z-10
+          w-[15px] ml-[5px] aspect-square
+          rounded-[10px]
+          flex items-center justify-center
+        "
+            >
+              <HugeiconsIcon
+                icon={Add01Icon}
+                size={16}
+                fill="currentColor"
+                className="text-[#e8e8e8] drop-shadow-sm"
+                strokeWidth={4}
+              />
+            </div>
+
+            <div className="relative z-10  text-center ml-[10px] mr-[5px]">
+              <span
+                className="
+            text-white font-[isb] text-[16px] 
+            drop-shadow-sm
+          "
+              >
+                Add Transaction
+              </span>
+            </div>
+          </button>
+        </div>
+        {/* 
         <InputFieldUI
           theme={props?.theme}
           inputTitle={"Transaction Name"}
@@ -673,11 +1118,7 @@ export default function ContentContainer(props) {
             </div>
           </div>
         </div>
-        {/* <div className="w-full mt-[20px] flex justify-start items-start">
-          <div className="px-[10px] py-[3px] text-[14px] flex justify-center items-center font-[isb]">
-            Travel
-          </div>
-        </div> */}
+       
         <div className="w-full flex justify-start items-center mt-[20px]">
           <div
             className="max-h-[50px] aspect-square min-h-[20px] mr-[-35px] flex justify-center items-center  z-[51] "
@@ -814,16 +1255,15 @@ export default function ContentContainer(props) {
                 : " opacity-25 cursor-not-allowed")
             }
           >
-            {/* Glass overlay effect */}
-            {/* <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent rounded-[10px]" /> */}
+            
 
-            {/* Inner shadow for depth */}
+           
             <div className="absolute inset-0 rounded-[10px] shadow-inner shadow-blue-900/20" />
 
-            {/* Subtle highlight on top */}
+           
             <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
 
-            {/* Plus icon circle */}
+            
             <div
               className="
           relative z-10
@@ -841,7 +1281,7 @@ export default function ContentContainer(props) {
               />
             </div>
 
-            {/* Create text */}
+           
             <div className="relative z-10  text-center ml-[10px] mr-[5px]">
               <span
                 className="
@@ -853,7 +1293,7 @@ export default function ContentContainer(props) {
               </span>
             </div>
           </button>
-        </div>
+        </div> */}
       </motion.div>
 
       {/* ---- For showing image */}

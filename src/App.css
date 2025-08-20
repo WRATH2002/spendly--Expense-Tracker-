@@ -128,3 +128,26 @@
   font-family: gs;
   src: url(./assets/font/Ckhans-Fonts-Gravitica-Slab-Light-Demo.otf);
 }
+
+/* ------------- */
+
+@font-face {
+  font-family: eb;
+  src: url(./assets/font/newFonts/EudoxusSans-Bold.ttf);
+}
+@font-face {
+  font-family: eeb;
+  src: url(./assets/font/newFonts/EudoxusSans-ExtraBold.ttf);
+}
+@font-face {
+  font-family: er;
+  src: url(./assets/font/newFonts/EudoxusSans-Regular.ttf);
+}
+@font-face {
+  font-family: em;
+  src: url(./assets/font/newFonts/EudoxusSans-Medium.ttf);
+}
+@font-face {
+  font-family: pr;
+  src: url(./assets/font/newFonts/POIAeronautTrial-Regular.otf);
+}
