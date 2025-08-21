@@ -87,7 +87,8 @@ export default function ContentContainer(props) {
   const [trnCategory, setTrnCategory] = useState("");
   const [searchCat, setSearchCat] = useState("");
 
-  const [trnIncludeInBudget, setTrnIncludeInBudget] = useState(false);
+  const [trnIncludeInBudget, setTrnIncludeInBudget] = useState(true);
+  const [trnIsInward, setTrnIsInward] = useState(false);
   const [trnAmount, setTrnAmount] = useState("");
   const [trnReciept, setTrnReciept] = useState("");
   const [trnRecieptInfo, setTrnRecieptInfo] = useState("");
@@ -390,6 +391,7 @@ export default function ContentContainer(props) {
           transactionAmount: parseFloat(parseFloat(trnAmount).toFixed(2)),
           transactionCategory: trnCategory,
           includeInBudget: trnIncludeInBudget,
+          isTrnInward: trnIsInward,
           // splittedMemberCount: splittedMemberCount,
           // splittedMemberIDS: splittedMemberIDS,
         }),
@@ -620,7 +622,7 @@ export default function ContentContainer(props) {
               />
             </div>
             <div className="h-full border-l-[1.5px] border-[#1C1C1E] "></div>
-            <div className="w-[50%] h-full flex justify-start items-center ">
+            <div className="w-[50%] h-full flex justify-center items-center pl-[15px] ">
               {/* <NewInputFields // ---- For Transaction Inwar Input
                 theme={props?.theme}
                 inputTitle={"Transaction Amount"}
@@ -641,6 +643,45 @@ export default function ContentContainer(props) {
                 isRequired={true}
                 type={"number"}
               /> */}
+              <div className="w-auto flex flex-col justify-start items-start">
+                <div className="w-[160] h-[30px] flex justify-start items-center z-20">
+                  <div
+                    className={
+                      "w-[80px] rounded-xl h-full flex justify-center items-center" +
+                      (trnIsInward ? " text-[#797979]" : " text-[#000000]")
+                    }
+                    onClick={() => {
+                      setTrnIsInward(!trnIsInward);
+                    }}
+                    style={{ transition: ".3s" }}
+                  >
+                    Outward
+                  </div>
+                  <div
+                    className={
+                      "w-[80px] rounded-xl h-full flex justify-center items-center" +
+                      (trnIsInward ? " text-[#000000]" : " text-[#797979]")
+                    }
+                    onClick={() => {
+                      setTrnIsInward(!trnIsInward);
+                    }}
+                    style={{ transition: ".3s" }}
+                  >
+                    Inward
+                  </div>
+                </div>
+                <div className="w-[160] flex h-[30px] mt-[-30px] justify-start items-center">
+                  <div
+                    className={
+                      "h-full w-[80px] rounded-xl" +
+                      (trnIsInward
+                        ? " bg-[#7ED957] ml-[80px]"
+                        : " bg-[#FF6F6F] ml-[0px] ")
+                    }
+                    style={{ transition: ".3s" }}
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
           <div className="w-full border-t-[1.5px] border-[#1C1C1E]"></div>
@@ -842,7 +883,8 @@ export default function ContentContainer(props) {
                 setImagePreview(null);
                 setImageUploadPortion(0);
                 setActiveInputField("taskTitle");
-                setTrnIncludeInBudget(false);
+                setTrnIncludeInBudget(true);
+                setTrnIsInward(false);
               }
             }}
             className={
