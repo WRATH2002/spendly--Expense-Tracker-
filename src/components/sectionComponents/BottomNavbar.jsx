@@ -1,6 +1,8 @@
 import {
   Add02Icon,
+  CreditCardPosIcon,
   Home02Icon,
+  Invoice02Icon,
   Payment01Icon,
   Payment02Icon,
   PieChartIcon,
@@ -63,7 +65,7 @@ export default function BottomNavbar(props) {
         fill="currentColor"
       />
       <HugeiconsIcon
-        icon={Payment01Icon}
+        icon={Invoice02Icon}
         size={24}
         strokeWidth={2}
         className={

@@ -54,6 +54,7 @@ import ChartSection from "./sectionComponents/ChartSection";
 import SettingsSection from "./sectionComponents/SettingsSection";
 import { temp } from "../utils/constants";
 import NewInputFields from "./NewInputFields";
+import SplitContainer from "./SplitContainer";
 
 const getColor = (value) => {
   // if (value < 40) return "#D25340"; // red
@@ -445,6 +446,10 @@ export default function ContentContainer(props) {
       ) : activeSection === "settings" ? (
         <>
           <SettingsSection accountInfo={accountInfo} />
+        </>
+      ) : activeSection === "split" ? (
+        <>
+          <SplitContainer accountInfo={accountInfo} />
         </>
       ) : (
         <></>
