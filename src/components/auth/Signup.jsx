@@ -115,6 +115,15 @@ export default function Signup() {
         AllTransactions: [],
       });
 
+    // ---------- Inside User Space creating All Transaction Space
+    db.collection("userSpace")
+      .doc(user.uid)
+      .collection("AllTransactionsSpace")
+      .doc("SplitTransactions")
+      .set({
+        SplitTransactions: [],
+      });
+
     console.log(
       `%cYou have successfuly %cSigned Up%c !\n%cUserID :%c ${user?.uid}\n%cName :%c ${nameAfterFormating}\n%cEmail :%c ${email}`,
       "color: #21da0f;",
