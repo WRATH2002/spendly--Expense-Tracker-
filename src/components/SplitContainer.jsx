@@ -49,7 +49,7 @@ export default function SplitContainer() {
     let totals = {};
 
     // Step 1: Calculate total spent by each person
-    allTransactions.forEach((transaction) => {
+    allTransactions?.forEach((transaction) => {
       const payee = transaction.payeeName;
       const amount = parseFloat(transaction.transactionAmount);
       totals[payee] = (totals[payee] || 0) + amount;
@@ -66,7 +66,7 @@ export default function SplitContainer() {
     // Step 3: Create detailed result for each person
     let result = {};
 
-    people.forEach((person) => {
+    people?.forEach((person) => {
       const spent = totals[person];
       const alterAmount = parseFloat((spent - perPersonShare).toFixed(2)); // + means get, - means pay
       const toPay = alterAmount < 0;
